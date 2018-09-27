@@ -1,4 +1,8 @@
-(ns lox.scanner.helpers)
+(ns lox.scanner.helpers
+  (:require [lox.utils.list :as l]))
+
+(defrecord Token
+  [type text literal line])
 
 (defn current-char [scanner]
   (-> scanner
@@ -20,3 +24,19 @@
 
 (defn end? [scanner]
   (>= (:current scanner) (count (:source scanner))))
+
+(defn match? [scanner expected]
+  (and
+    (not (end? scanner))
+    (= expected (current-char scanner))))
+
+(defn text [scanner]
+  (l/slice
+    (:source scanner)
+    (:start scanner)
+    (:current scanner)))
+
+(defn add-token
+  ([scanner type] (add-token scanner type nil))
+  ([scanner type literal]
+   (update-in scanner [:tokens] conj (Token. (text scanner) type literal (:line scanner)))))

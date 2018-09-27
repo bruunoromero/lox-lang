@@ -31,3 +31,12 @@
   (testing "end? returns false if scanner is before the last position"
     (let [scanner (s/create-scanner "var a = 10;")]
       (is (false? (h/end? scanner))))))
+
+(deftest match?
+  (testing "match? returns true if it matches the expected character and false otherwise"
+    (let [source "var a = 10;"
+          scanner (s/create-scanner source)
+          end-scanner (assoc-in (s/create-scanner source) [:current] (count source))]
+      (is (true? (h/match? scanner "v")))
+      (is (false? (h/match? scanner "a")))
+      (is (false? (h/match? end-scanner "v"))))))
