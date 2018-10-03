@@ -1,5 +1,8 @@
 (ns lox.utils.char)
 
+(defn period? [char]
+  (= char \.))
+
 (defn alpha? [char]
   (when char
     (or (= \_ char)
