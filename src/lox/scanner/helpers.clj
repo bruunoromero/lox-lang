@@ -4,16 +4,17 @@
 (defrecord Token
   [text type literal line])
 
-(defn current-char [scanner]
-  (-> scanner
-    (:source)
-    (nth (:current scanner))))
-
 (defn advance [scanner]
   (update-in scanner [:current] inc))
 
 (defn end? [scanner]
   (>= (:current scanner) (count (:source scanner))))
+
+(defn current-char [scanner]
+  (when (not (end? scanner))
+    (-> scanner
+        (:source)
+        (nth (:current scanner)))))
 
 (defn peek
   ([scanner] (peek scanner 1))
