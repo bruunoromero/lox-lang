@@ -4,16 +4,23 @@
 (defrecord Token
   [text type literal line])
 
-(defn current-char [scanner]
-  (-> scanner
-    (:source)
-    (nth (:current scanner))))
-
 (defn advance [scanner]
   (update-in scanner [:current] inc))
 
 (defn end? [scanner]
   (>= (:current scanner) (count (:source scanner))))
+
+(defn current-char [scanner]
+  (when (not (end? scanner))
+    (-> scanner
+        (:source)
+        (nth (:current scanner)))))
+
+(defn text [scanner]
+  (apply str (l/slice
+               (:source scanner)
+               (:start scanner)
+               (:current scanner))))
 
 (defn peek
   ([scanner] (peek scanner 1))
@@ -21,15 +28,9 @@
    (loop [scanner scanner
           amount amount]
      (cond
-       (end? scanner) \0
+       (end? scanner) nil
        (>= 0 amount) (current-char scanner)
        :else (recur (advance scanner) (dec amount))))))
-
-(defn text [scanner]
-  (apply str (l/slice
-               (:source scanner)
-               (:start scanner)
-               (:current scanner))))
 
 (defn add-token
   ([scanner type] (add-token scanner type nil))
